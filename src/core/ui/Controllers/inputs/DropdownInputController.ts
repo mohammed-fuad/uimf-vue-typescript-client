@@ -24,7 +24,7 @@ export class DropdownInputController extends umf.InputController<DropdownValue> 
 	}
 
 	private parse(value: string): DropdownValue {
-		return value == null || value == '' ? null : { value: value };
+		return value == null || value === '' ? null : { value: value };
 	}
 }
 

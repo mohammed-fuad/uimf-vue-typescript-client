@@ -15,11 +15,11 @@ export abstract class InputController<T> {
 
 	serialize(): Promise<{ value: string, input: InputController<T> }> {
 		return this.getValue().then(t => {
-			var valueAsString = this.serializeValue(t);
+			let valueAsString = this.serializeValue(t);
 			return {
 				value: valueAsString,
 				input: this
-			}
+			};
 		});
 	}
 }

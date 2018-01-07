@@ -7,7 +7,6 @@ import { Logger } from '../../util/log';
     template: require('./navbar.html')
 })
 export class NavbarComponent extends Vue {
-
     protected logger: Logger;
 
     inverted: boolean = true; // default value

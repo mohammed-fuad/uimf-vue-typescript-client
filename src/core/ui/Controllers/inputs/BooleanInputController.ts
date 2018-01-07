@@ -19,7 +19,7 @@ export class BooleanInputController extends umf.InputController<boolean> {
 
 	private parse(value): boolean {
 		return value != null
-			? value.toString() == 'true'
+			? value.toString() === 'true'
 			: this.metadata.required ? false : null;
 	}
 }

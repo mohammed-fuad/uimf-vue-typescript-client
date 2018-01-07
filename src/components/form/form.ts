@@ -75,7 +75,7 @@ export class FormComponent extends Vue {
     enableForm = function () {
         let formInstance = this.form;
 
-        this.visibleInputFields = formInstance.inputs.filter(t => t.metadata.hidden == false);
+        this.visibleInputFields = formInstance.inputs.filter(t => t.metadata.hidden === false);
         this.disabled = false;
     };
 
@@ -141,7 +141,7 @@ export class FormComponent extends Vue {
 
             await app.runFunctions(response.metadata.functionsToRun);
 
-            if (response.metadata.handler == '' || response.metadata.handler == null) {
+            if (response.metadata.handler === '' || response.metadata.handler == null) {
                 self.renderResponse(response);
             }
             else {

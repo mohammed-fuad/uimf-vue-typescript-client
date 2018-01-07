@@ -6,9 +6,7 @@ import './Table.scss';
 
 @Component({
 	template: require('./Table.html'),
-	components: {
-		'FormOutput': Output
-	}
+	components: { 'FormOutput': Output }
 })
 export class TableOutput extends Vue {
 	field: any = null;

@@ -19,7 +19,7 @@ export class FormInstance {
 
     fire(eventName: string, parameters: FormEventArguments) {
         let promises = [];
-        
+
         // Run input event handlers.
         for (let input of this.inputs) {
             if (input.metadata.eventHandlers != null) {
@@ -29,7 +29,7 @@ export class FormInstance {
                         if (handler == null) {
                             throw new Error(`Could not find input event handler '${eventHandlerMetadata.id}'.`);
                         }
-                        
+
                         let promise = handler.run(input, eventHandlerMetadata, parameters);
                         promises.push(promise);
                     }
@@ -79,7 +79,7 @@ export class FormInstance {
 
             if (data != null) {
                 for (let prop in data) {
-                    if (data.hasOwnProperty(prop) && prop.toLowerCase() == fieldMetadata.metadata.id.toLowerCase()) {
+                    if (data.hasOwnProperty(prop) && prop.toLowerCase() === fieldMetadata.metadata.id.toLowerCase()) {
                         value = data[prop];
                         break;
                     }
@@ -107,7 +107,7 @@ export class FormInstance {
             let promise = input.getValue().then(value => {
                 data[input.metadata.id] = value;
 
-                if (input.metadata.required && (value == null || (typeof (value) === 'string' && value == ''))) {
+                if (input.metadata.required && (value == null || (typeof (value) === 'string' && value === ''))) {
                     hasRequiredMissingInput = true;
                 }
             });
@@ -134,7 +134,7 @@ export class FormInstance {
             let promise = input.serialize().then(t => {
                 // Don't include inputs without values, because we only
                 // want to serialize 'non-default' values.
-                if (t.value != null && t.value != '') {
+                if (t.value != null && t.value !== '') {
                     data[input.metadata.id] = t.value;
                 }
             });
@@ -160,7 +160,7 @@ export class FormInstance {
 
             // Don't include inputs without values, because we only
             // want to serialize 'non-default' values.
-            if (valueAsString != null && valueAsString != '') {
+            if (valueAsString != null && valueAsString !== '') {
                 data[input.metadata.id] = valueAsString;
             }
         }

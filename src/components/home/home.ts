@@ -7,7 +7,6 @@ import './home.scss';
     template: require('./home.html')
 })
 export class HomeComponent extends Vue {
-
     package: string = this.$root.$data.title;
     repo: string = 'https://github.com/mohammed-fuad/uimf-vue-typescript';
     mode: string = process.env.ENV;

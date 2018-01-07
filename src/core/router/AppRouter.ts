@@ -29,7 +29,6 @@ export class AppRouter implements umf.IAppRouter {
 					caseSensitive: true,
 					props: (route) => ({ metadata: route.meta.metadata, form: route.meta.form, app: route.meta.app })
 				},
-				//404
 				{ path: '*', redirect: '/' }
 			],
 			scrollBehavior(to, from, savedPosition) {

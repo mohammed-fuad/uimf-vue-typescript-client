@@ -30,7 +30,8 @@ let config = {
     rules: [{
       test: /\.ts$/,
       enforce: 'pre',
-      loader: 'tslint-loader'
+      loader: 'tslint-loader',
+      exclude: [helpers.root('node_modules')]
     },
     {
       test: /\.ts$/,

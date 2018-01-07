@@ -4,7 +4,7 @@ export class PasswordInputController extends umf.InputController<Password> {
 	selected: string;
 
 	serializeValue(value: Password | string): string {
-		if (typeof (value) === "string") {
+		if (typeof (value) === 'string') {
 			return value;
 		}
 
@@ -24,7 +24,7 @@ export class PasswordInputController extends umf.InputController<Password> {
 	}
 
 	private parse(value: string): Password {
-		return value == null || value == "" ? null : { value: value };
+		return value == null || value === '' ? null : { value: value };
 	}
 }
 

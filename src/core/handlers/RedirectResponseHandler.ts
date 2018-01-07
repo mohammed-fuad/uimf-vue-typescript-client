@@ -2,7 +2,7 @@ import * as umf from 'uimf-core';
 import { IFormResponseHandler, FormInstance } from 'core-framework';
 
 export class RedirectResponseHandler implements IFormResponseHandler {
-	public readonly name: string = "redirect";
+	public readonly name: string = 'redirect';
 	private readonly goToForm: (form: string, inputFieldValues: any) => void;
 
 	constructor(goToForm: (form: string, inputFieldValues: any) => void) {
@@ -21,7 +21,7 @@ class RedirectResponse extends umf.FormResponse {
 	public form: string;
 
 	/**
-	 * Gets or sets values for the input fields of the form (i.e. - <see cref="FormMetadata.InputFields"/>).
+	 * Gets or sets values for the input fields of the form (i.e. - <see cref='FormMetadata.InputFields'/>).
 	 */
 	public inputFieldValues: any;
 }

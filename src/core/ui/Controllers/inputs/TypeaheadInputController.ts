@@ -29,7 +29,7 @@ export class TypeaheadInputController
 	}
 
 	private parse(value: string): TypeaheadValue {
-		return value == null || value == ''
+		return value == null || value === ''
 			? new TypeaheadValue()
 			: new TypeaheadValue(value);
 	}
