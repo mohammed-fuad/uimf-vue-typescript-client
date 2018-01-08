@@ -21,6 +21,7 @@ export class ActionList extends Vue {
 	parent: any;
 	data: any;
 	modalComponent: any = {};
+	private initialized: boolean = false;
 
 	created() {
 		this.field = this.$attrs['field'];
@@ -55,7 +56,7 @@ export class ActionList extends Vue {
 			};
 
 			this.current = this;
-
+			this.initialized = true;
 			EventBus.$on('form:responseHandled', e => {
 				if (e.invokedByUser && formInstance.metadata.closeOnPostIfModal) {
 					self.close(true);

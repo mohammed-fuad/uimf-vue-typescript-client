@@ -1,7 +1,8 @@
 <span v-if="field.data != null && field.data.actions != null && field.data.actions.length > 0">
 	<ul class="actionlist">
 		<li v-for="action in field.data.actions">
-			<button v-on:click="run(action, app)">{{action.label}}</button>
+			<button v-on:click.prevent="run(action, app)"
+			 class="btn btn-default btn-sm">{{action.label}}</button>
 		</li>
 	</ul>
 
@@ -9,7 +10,8 @@
 	 @close="close(true)">
 		<h3 slot="header"></h3>
 		<div slot="body">
-			<FormComponent v-bind:metadata="modalComponent.metadata"
+			<FormComponent v-if="initialized"
+			 v-bind:metadata="modalComponent.metadata"
 			 v-bind:app="modalComponent.app"
 			 v-bind:form="modalComponent.form"
 			 v-bind:useUrl="modalComponent.useUrl"
