@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Component } from 'vue-property-decorator';
-import { Output } from '../../output';
+import { Output } from 'core-ui/output';
 
 import './Table.scss';
 

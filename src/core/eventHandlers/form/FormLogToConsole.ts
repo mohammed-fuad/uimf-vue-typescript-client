@@ -2,7 +2,7 @@ import {
 	FormInstance,
 	FormEventHandler,
 	FormEventArguments
-} from '../../framework/index';
+} from 'core-framework';
 import { EventHandlerMetadata } from 'uimf-core';
 
 export class FormLogToConsole extends FormEventHandler {

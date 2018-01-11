@@ -8,6 +8,8 @@ import { PaginatorInputController } from 'core-ui/Controllers/inputs/PaginatorIn
 import { MultiSelectInputController } from 'core-ui/Controllers/inputs/MultiSelectInputController';
 import { TypeaheadInputController } from 'core-ui/Controllers/inputs/TypeaheadInputController';
 import { PasswordInputController } from 'core-ui/Controllers/inputs/PasswordInputController';
+import { TextareaInputController } from 'core-ui/Controllers/inputs/TextareaInputController';
+import { DynamicFormInputController } from 'core-ui/Controllers/inputs/DynamicFormInputController';
 
 import { TextInput } from 'core-ui/Elements/inputs/Text';
 import { NumberInput } from 'core-ui/Elements/inputs/Number';
@@ -16,6 +18,8 @@ import { DropdownInput } from 'core-ui/Elements/inputs/Dropdown';
 import { BooleanInput } from 'core-ui/Elements/inputs/Boolean';
 import { MultiSelectInput } from 'core-ui/Elements/inputs/MultiSelect';
 import { PasswordInput } from 'core-ui/Elements/inputs/Password';
+import { TextareaInput } from 'core-ui/Elements/inputs/Textarea';
+import { DynamicForm } from 'core-ui/Elements/inputs/DynamicForm';
 
 import { TextOutput } from 'core-ui/Elements/outputs/Text';
 import { NumberOutput } from 'core-ui/Elements/outputs/Number';
@@ -27,12 +31,16 @@ import { Paginator } from 'core-ui/Elements/outputs/Paginator';
 import { ActionList } from 'core-ui/Elements/outputs/ActionList';
 import { InlineForm } from 'core-ui/Elements/outputs/InlineForm';
 import { TextValue } from 'core-ui/Elements/outputs/TextValue';
+import { Alert } from 'core-ui/Elements/outputs/Alert';
+import { DynamicOutput } from 'core-ui/Elements/outputs/DynamicOutput';
+import { FormInstance } from 'core-ui/Elements/outputs/FormInstance';
 
 import {
 	FormLogToConsole,
 	BindToOutput,
 	InputLogToConsole,
-	OutputLogToConsole
+	OutputLogToConsole,
+	ReloadFormAfterAction
 } from 'core-eventHandlers';
 
 import { Growl } from 'core-functions';
@@ -48,6 +56,8 @@ controlRegister.registerInputFieldControl('paginator', null, PaginatorInputContr
 controlRegister.registerInputFieldControl('typeahead', MultiSelectInput, TypeaheadInputController);
 controlRegister.registerInputFieldControl('multiselect', MultiSelectInput, MultiSelectInputController);
 controlRegister.registerInputFieldControl('password', PasswordInput, PasswordInputController);
+controlRegister.registerInputFieldControl('textarea', TextareaInput, TextareaInputController, { block: true });
+controlRegister.registerInputFieldControl('dynamic-form', DynamicForm, DynamicFormInputController);
 
 controlRegister.registerOutputFieldControl('text', TextOutput);
 controlRegister.registerOutputFieldControl('number', NumberOutput);
@@ -59,9 +69,13 @@ controlRegister.registerOutputFieldControl('paginated-data', Paginator, { block:
 controlRegister.registerOutputFieldControl('action-list', ActionList, { alwaysHideLabel: true, block: true });
 controlRegister.registerOutputFieldControl('inline-form', InlineForm, { alwaysHideLabel: true, block: true });
 controlRegister.registerOutputFieldControl('text-value', TextValue);
+controlRegister.registerOutputFieldControl('alert', Alert, { alwaysHideLabel: true, block: true });
+controlRegister.registerOutputFieldControl('object-list', DynamicOutput, { block: true });
+controlRegister.registerOutputFieldControl('form-instance', FormInstance, { alwaysHideLabel: true });
 
 // Form event handlers.
 controlRegister.registerFormEventHandler('log-to-console', new FormLogToConsole());
+controlRegister.registerFormEventHandler('reload-form-after-action', new ReloadFormAfterAction());
 
 // Input event handlers.
 controlRegister.registerInputFieldEventHandler('bind-to-output', new BindToOutput());

@@ -30,7 +30,7 @@ export class StringInputController extends InputController<string> {
 	}
 
 	serializeValue(value: string): string {
-		// Ensure we don't return "undefined", but return null instead.
+		// Ensure we don't return 'undefined', but return null instead.
 		return value != null ? value.toString() : null;
 	}
 

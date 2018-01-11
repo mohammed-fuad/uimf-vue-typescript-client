@@ -1,0 +1,7 @@
+<div v-if="inputs != null">
+	<FormInput v-for="inputField in inputs"
+	 v-bind:field="inputField"
+	 v-bind:app="app"
+	 v-bind:tabindex="tabindex * 100 + inputField.metadata.orderIndex"
+	 v-bind:form="form" />
+</div>

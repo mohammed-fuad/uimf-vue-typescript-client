@@ -3,6 +3,7 @@ import { Component } from 'vue-property-decorator';
 import { FormComponent } from 'core-form';
 import { Modal } from './Modal';
 import EventBus from 'core/event-bus';
+import { ActionListEventArguments } from './ActionListEventArguments';
 
 import './ActionList.scss';
 
@@ -13,7 +14,7 @@ import './ActionList.scss';
 export class ActionList extends Vue {
 	open: boolean = false;
 	current: any = null;
-	modalId = 0;
+	modalid = 0;
 	modals = [];
 	field: any;
 	app: any;
@@ -23,29 +24,37 @@ export class ActionList extends Vue {
 	modalComponent: any = {};
 	private initialized: boolean = false;
 
+	get modalId() {
+		return this.modalid;
+	}
 	created() {
 		this.field = this.$attrs['field'];
 		this.app = this.$attrs['app'];
 		this.form = this.$attrs['form'];
 		this.parent = this.$attrs['parent'];
+		this.modalid += 1;
 	}
 
 	beforeDestroy() {
 		EventBus.$off('form:responseHandled');
 	}
 
-	run = function (action, app) {
-		this.open = true;
-		this.modalId += 1;
-
+	run = async function (action, app) {
+		let self = this;
 		let formInstance = app.getFormInstance(action.form, true);
 
 		// TODO: find a way to initialize from action.inputFieldValues directly.
 		let serializedInputValues = formInstance.getSerializedInputValuesFromObject(action.inputFieldValues);
+		await formInstance.initializeInputFields(serializedInputValues);
 
-		let self = this;
+		let allRequiredInputsHaveData = await formInstance.allRequiredInputsHaveData(false);
 
-		formInstance.initializeInputFields(serializedInputValues).then(() => {
+		if (action.action === 'run' && allRequiredInputsHaveData) {
+			await formInstance.submit(this.get('app'), false);
+			this.onActionRun(formInstance.metadata.id);
+		}
+		else {
+			this.open = true;
 
 			this.modalComponent = {
 				metadata: formInstance.metadata,
@@ -55,16 +64,17 @@ export class ActionList extends Vue {
 				useUrl: false
 			};
 
-			this.current = this;
 			this.initialized = true;
+
 			EventBus.$on('form:responseHandled', e => {
 				if (e.invokedByUser && formInstance.metadata.closeOnPostIfModal) {
 					self.close(true);
 				}
 			});
-		});
 
-		this.modals.push(this);
+			this.current = self;
+			this.modals.push(self);
+		}
 	};
 
 	close(reloadParentForm) {
@@ -74,12 +84,21 @@ export class ActionList extends Vue {
 		EventBus.$off('form:responseHandled');
 
 		if (reloadParentForm) {
-			// Refresh parent form.
-			let app = this.app;
-			let form = this.form;
-			this.parent.submit(app, form, null, true);
+			let formId = this.form.metadata.id;
+			this.onActionRun(formId);
 		}
 
 		this.modals.slice(this.modals.findIndex(a => a === this));
+	}
+
+	async onActionRun(formId) {
+		let parentForm = this.parent;
+		let app = parentForm.app;
+		let formInstance = parentForm.form;
+
+		await parentForm.submit(app, formInstance, null, true);
+
+		let eventArgs = new ActionListEventArguments(app, formId);
+		parentForm.fireAndBubbleUp(`action-list:run`, eventArgs);
 	}
 }

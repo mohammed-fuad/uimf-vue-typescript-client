@@ -5,10 +5,14 @@ import { IFormResponseHandler } from './IFormResponseHandler';
 import { InputFieldValue } from './InputFieldValue';
 import { ControlRegister } from './ControlRegister';
 import { IAppRouter } from './IAppRouter';
+import { MenuMetadata } from './MenuMetadata';
 
 export class UmfApp implements IAppRouter {
 	forms: FormMetadata[];
-	private readonly formsById: { [id: string]: FormMetadata } = {};
+	menus: MenuMetadata[];
+	private formsById: { [id: string]: FormMetadata } = {};
+	private menusByName: { [id: string]: MenuMetadata } = {};
+	private eventHandlers = [];
 	public readonly server: UmfServer;
 	public readonly formResponseHandlers: { [id: string]: IFormResponseHandler } = {};
 	public controlRegister: ControlRegister;
@@ -18,6 +22,26 @@ export class UmfApp implements IAppRouter {
 	constructor(server: UmfServer, inputRegister: ControlRegister) {
 		this.server = server;
 		this.controlRegister = inputRegister;
+
+		for (let e of ['request:started', 'request:completed']) {
+			this.server.on(e, params => {
+				this.fire(e, params);
+			});
+		}
+	}
+
+	on(event: string, handler: (params: any) => void) {
+		this.eventHandlers[event] = this.eventHandlers[event] || [];
+		this.eventHandlers[event].push(handler);
+	}
+
+	private fire(event: string, params: any) {
+		let handlersForEvent = this.eventHandlers[event];
+		if (handlersForEvent != null && handlersForEvent.length > 0) {
+			for (let handler of handlersForEvent) {
+				handler(params);
+			}
+		}
 	}
 
 	useRouter(router: IAppRouter) {
@@ -37,19 +61,31 @@ export class UmfApp implements IAppRouter {
 	load() {
 		return this.server.getAllMetadata()
 			.then(response => {
-				this.forms = response;
+				this.forms = response.forms;
+				this.menus = response.menus;
+
+				this.formsById = {};
+				this.menusByName = {};
 
 				for (let form of this.forms) {
 					this.formsById[form.id] = form;
 				}
+
+				for (let menu of this.menus) {
+					this.menusByName[menu.name] = menu;
+				}
 			});
 	}
 
-	getForm(id: string) {
+	getForm(id: string): FormMetadata {
 		return this.formsById[id];
 	}
 
-	getFormInstance(formId: string, throwError: boolean = false) {
+	getMenu(name: string): MenuMetadata {
+		return this.menusByName[name];
+	}
+
+	getFormInstance(formId: string, throwError: boolean = false): FormInstance {
 		let metadata = this.getForm(formId);
 
 		if (metadata == null) {
@@ -65,20 +101,20 @@ export class UmfApp implements IAppRouter {
 		return new FormInstance(metadata, this.controlRegister);
 	}
 
-	handleResponse(response: FormResponse, form: FormInstance) {
+	handleResponse(response: FormResponse, form: FormInstance, args: any) {
 		let responseMetadata = response.metadata || new FormResponseMetadata();
-		let handler = this.formResponseHandlers[responseMetadata.handler];
+		let handler = this.formResponseHandlers[responseMetadata.handler || 'default'];
 
 		if (handler == null) {
-			let error = new Error(`Cannot find FormResponseHandler "${responseMetadata.handler}".`);
+			let error = new Error(`Cannot find FormResponseHandler '${responseMetadata.handler}'.`);
 			console.error(error);
 			throw error;
 		}
 
-		return handler.handle(response, form);
+		return handler.handle(response, form, args);
 	}
 
-	runFunctions(functionMetadata: ClientFunctionMetadata[]) {
+	runFunctions(functionMetadata: ClientFunctionMetadata[], eventArgs?: any) {
 		if (functionMetadata == null) {
 			return Promise.resolve();
 		}
@@ -91,7 +127,7 @@ export class UmfApp implements IAppRouter {
 				throw new Error(`Could not find function '${f.id}'.`);
 			}
 
-			let promise = handler.run(f);
+			let promise = handler.run(f, eventArgs);
 			promises.push(promise);
 		}
 

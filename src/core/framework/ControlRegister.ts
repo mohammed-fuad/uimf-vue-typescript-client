@@ -1,5 +1,3 @@
-import Vue from 'vue';
-import { Component } from 'vue-property-decorator';
 import * as umf from 'uimf-core';
 import {
     InputController,
@@ -18,6 +16,7 @@ interface InputFieldControllerConstructor {
 class InputControlEntry {
     controller: InputFieldControllerConstructor;
     component: any;
+    constants: any;
 }
 
 export class ControlRegister {
@@ -57,10 +56,11 @@ export class ControlRegister {
             : this.inputs['text'];
     }
 
-    registerInputFieldControl(name: string, vueComponent: any, controller: InputFieldControllerConstructor) {
+    registerInputFieldControl(name: string, vueComponent: any, controller: InputFieldControllerConstructor, constants: any = null) {
         this.inputs[name] = {
             controller: controller,
-            component: (vueComponent || {})
+            component: vueComponent,
+            constants: constants
         };
     }
 

@@ -1,0 +1,10 @@
+<div v-if="items != null">
+	<div class="object-list-item"
+	 v-for="itemFields in items">
+		<FormOutput v-for="itemField in itemFields"
+		 v-bind:field="itemField"
+		 v-bind:app="app"
+		 v-bind:form="form"
+		 v-bind:parent="parent" />
+	</div>
+</div>

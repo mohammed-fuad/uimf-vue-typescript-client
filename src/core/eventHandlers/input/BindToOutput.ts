@@ -2,12 +2,12 @@ import {
 	InputFieldEventHandler,
 	InputController,
 	FormInstance,
-	FormEventArguments
-} from '../../framework/index';
+	FormResponseEventArguments
+} from 'core-framework';
 import * as umf from 'uimf-core';
 
 export class BindToOutput extends InputFieldEventHandler {
-	run(input: InputController<any>, eventHandler: umf.EventHandlerMetadata, args: FormEventArguments): Promise<any> {
+	run(input: InputController<any>, eventHandler: umf.EventHandlerMetadata, args: FormResponseEventArguments): Promise<any> {
 		let promises = [];
 
 		let lowercaseInputId = eventHandler.customProperties.outputFieldId.toLowerCase();

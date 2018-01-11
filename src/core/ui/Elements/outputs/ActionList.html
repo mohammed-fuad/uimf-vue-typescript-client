@@ -8,7 +8,11 @@
 
 	<modal v-if="open"
 	 @close="close(true)">
-		<h3 slot="header"></h3>
+		<h3 slot="header">
+			<label :for="modalId"
+			 class="close"
+			 v-on:click="close(true)">Close</label>
+		</h3>
 		<div slot="body">
 			<FormComponent v-if="initialized"
 			 v-bind:metadata="modalComponent.metadata"

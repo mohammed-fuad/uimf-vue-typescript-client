@@ -4,5 +4,6 @@ import { EventHandlerMetadata } from 'uimf-core';
 
 export abstract class FormEventHandler {
 	id: string;
+
 	abstract run(form: FormInstance, eventHandlerMetadata: EventHandlerMetadata, args: FormEventArguments): Promise<void>;
 }

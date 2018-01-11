@@ -6,6 +6,27 @@ import EventBus from 'core/event-bus';
 
 import './form.scss';
 
+function bindEventHandlersToCustomEvents(formComponent, eventHandlers) {
+    let formInstance = formComponent.form;
+    let app = formComponent.app;
+    
+    // Bind all 'form event handlers'. 
+    for (let eventHandler of eventHandlers) {
+        // Don't bind default event handlers, because they are already auto-bound inside FormInstance.
+        if (eventHandler.runAt.indexOf('form:') === 0) {
+            continue;
+        }
+
+        formComponent.$on(eventHandler.runAt, e => {
+            // Augment event args with form which is firing the event. This is needed,
+            // so that event handler can know from which particular form this event is coming.
+            e.form = formComponent;
+
+            formInstance.handleEvent(eventHandler.runAt, eventHandler, e);
+        });
+    }
+}
+
 @Component({
     template: require('./form.html'),
     components: {
@@ -19,7 +40,7 @@ export class FormComponent extends Vue {
     submitButtonLabel: string = null;
     tabindex: number = 1;
     disabled: false;
-    responseMetadata: any = null;
+    responseMetadata: any = {};
     urlData: null;
     useUrl: boolean = true;
     metadata: any = null;
@@ -27,10 +48,13 @@ export class FormComponent extends Vue {
     app: any;
     outputFieldValues: any = null;
     self: any;
+    openForms: any[] = [];
+    parent: any = null;
 
     setMetadata = function () {
+        this.parent = this.$attrs['parent'];
         this.metadata = this.metadata || this.$attrs['metadata'];
-        this.tabindex += parseInt(this.$attrs['tabindex']) || 1;
+        this.tabindex += parseInt(this.$attrs['tabindex']).valueOf() || 1;
 
         let url = new Boolean(this.$attrs['useUrl']).valueOf();
 
@@ -51,7 +75,11 @@ export class FormComponent extends Vue {
         this.setMetadata();
     }
 
-    init = function () {
+    beforeDestroy() {
+        this.openForms = this.openForms.filter(f => f !== this);
+    }
+
+    init = async function () {
         if (!this.initialized) {
             this.form = this.form || this.$attrs['form'];
             this.self = this;
@@ -62,15 +90,37 @@ export class FormComponent extends Vue {
                 ? this.form.metadata.customProperties.SubmitButtonLabel
                 : 'Submit';
 
+            this.tabindex += 1;
+
             this.app = this.app || this.$attrs['app'];
+            
+            bindEventHandlersToCustomEvents(this, this.form.metadata.eventHandlers);
+
             this.form.fire('form:loaded', { app: this.app });
 
             // Auto-submit form if necessary.
             if (this.form.metadata.postOnLoad) {
-                this.submit(this.app, this.form);
+                await this.submit(this.app, this.form);
+            }
+
+            this.openForms.push(this);
+
+            if (this.parent == null) {
+                if (this.responseMetadata.title == null) {
+                    document.title = this.form.metadata.label;
+                }
             }
         }
     };
+
+    fireAndBubbleUp(eventName, eventArgs) {
+        EventBus.$emit(eventName, eventArgs);
+        let parentFormComponent = this.parent;
+
+        if (parentFormComponent != null) {
+            parentFormComponent.fireAndBubbleUp(eventName, eventArgs);
+        }
+    }
 
     enableForm = function () {
         let formInstance = this.form;
@@ -84,6 +134,10 @@ export class FormComponent extends Vue {
 
         this.outputFieldValues = formInstance.outputs;
         this.responseMetadata = response.metadata;
+
+        if (this.parent == null) {
+            document.title = response.metadata.title;
+        }
     };
 
     submit = async function (app, formInstance, event, redirect) {
@@ -96,16 +150,9 @@ export class FormComponent extends Vue {
             event.preventDefault();
         }
 
-        let skipValidation =
-            !formInstance.metadata.postOnLoadValidation &&
-            formInstance.metadata.postOnLoad &&
-            // if initialization of the form, i.e. - first post.
-            redirect == null;
-
-        let data = await formInstance.prepareForm(!skipValidation);
-
         // If not all required inputs are filled.
-        if (data == null) {
+        let allRequiredInputsHaveValues = await formInstance.allRequiredInputsHaveData(redirect == null);
+        if (!allRequiredInputsHaveValues) {
             return;
         }
 
@@ -126,29 +173,8 @@ export class FormComponent extends Vue {
             return;
         }
 
-        await formInstance.fire('form:posting', { response: null, app: app });
-
         try {
-            let response = await app.server.postForm(formInstance.metadata.id, data);
-            await formInstance.fire('form:responseReceived', { response: response, app: app });
-
-            formInstance.setOutputFieldValues(response);
-
-            // Null response is treated as a server-side error.
-            if (response == null) {
-                throw new Error(`Received null response.`);
-            }
-
-            await app.runFunctions(response.metadata.functionsToRun);
-
-            if (response.metadata.handler === '' || response.metadata.handler == null) {
-                self.renderResponse(response);
-            }
-            else {
-                app.handleResponse(response, formInstance);
-            }
-
-            await formInstance.fire('form:responseHandled', { response: response, app: app });
+            await formInstance.submit(app, redirect == null, { formComponent: self });
 
             self.enableForm();
 
@@ -162,4 +188,23 @@ export class FormComponent extends Vue {
             self.enableForm();
         }
     };
+
+    reloadTopForm() {
+        let parentFormComponent = this.parent;
+
+        if (parentFormComponent != null) {
+            parentFormComponent.reloadTopForm();
+        }
+        else {
+            let app = this.app;
+            let formInstance = this.form;
+            this.submit(app, formInstance, null, true);
+        }
+    }
+
+    reloadAllForms() {
+        for (let f of this.openForms) {
+            f.reloadTopForm();
+        }
+    }
 }

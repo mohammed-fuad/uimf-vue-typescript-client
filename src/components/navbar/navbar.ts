@@ -31,7 +31,7 @@ export class NavbarComponent extends Vue {
             let app = this.$root.$data._app;
 
             for (let form of app.forms) {
-                if (form.customProperties != null && form.label) {
+                if (form.customProperties != null && (form.customProperties.menu != null || form.label != null)) {
                     this.links.push(new Link(form.label, app.makeUrl(form.id, null)));
                 }
             }

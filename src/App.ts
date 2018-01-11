@@ -13,14 +13,14 @@ let app = new UmfApp(server, controlRegister);
 app.load().then(response => {
     let router = new AppRouter(app);
     app.useRouter(router);
-
+    
+    app.registerResponseHandler(new handlers.FormComponentResponseHandler());
     app.registerResponseHandler(new handlers.MessageResponseHandler());
     app.registerResponseHandler(new handlers.ReloadResponseHandler((form, inputFieldValues) => {
         return app.load().then(t => {
             return app.makeUrl(form, inputFieldValues);
         });
     }));
-
     app.registerResponseHandler(new handlers.RedirectResponseHandler((form, inputFieldValues) => {
         app.go(form, inputFieldValues);
     }));

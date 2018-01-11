@@ -1,0 +1,7 @@
+<div v-if="field.data != null"
+ class="alert {{field.data.style}}">
+	<div v-if="field.data.heading != null"
+	 class="heading">{{field.data.heading}}</div>
+	<div v-if="field.data.message != null"
+	 class="body">{{field.data.message}}</div>
+</div>

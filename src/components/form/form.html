@@ -1,6 +1,6 @@
 <div>
     <h1>
-        <strong>{{(responseMetadata || {}).title || (metadata || {}).label}}</strong>
+        {{responseMetadata.title || metadata.label}}
     </h1>
 
     <form v-if="initialized && visibleInputFields.length > 0"
@@ -15,7 +15,8 @@
         </FormInput>
 
         <button type="submit"
-            tabindex="-1">{{submitButtonLabel}}</button>
+            tabindex="-1"
+            class="btn btn-info btn-sm">{{submitButtonLabel}}</button>
     </form>
     <div class="response"
         v-if="outputFieldValues != null">
@@ -25,6 +26,7 @@
             v-bind:field="outputField"
             v-bind:app="app"
             v-bind:form="form"
-            v-bind:parent="self" />
+            v-bind:parent="self">
+        </FormOutput>
     </div>
 </div>

@@ -3,7 +3,7 @@ import {
 	InputController,
 	FormInstance,
 	FormEventArguments
-} from '../../framework/index';
+} from 'core-framework';
 import * as umf from 'uimf-core';
 
 export class InputLogToConsole extends InputFieldEventHandler {

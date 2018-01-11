@@ -2,7 +2,7 @@ import {
 	OutputFieldValue,
 	OutputFieldEventHandler,
 	FormEventArguments
-} from '../../framework/index';
+} from 'core-framework';
 import { EventHandlerMetadata } from 'uimf-core';
 
 export class OutputLogToConsole extends OutputFieldEventHandler {

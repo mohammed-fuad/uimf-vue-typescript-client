@@ -1,0 +1,5 @@
+<div v-if="field.data != null && field.data.values != null"
+ v-for="input in field.data.values">
+	<strong>{{input.label}}:</strong>
+	<span>{{input.value}}</span>
+</div>
