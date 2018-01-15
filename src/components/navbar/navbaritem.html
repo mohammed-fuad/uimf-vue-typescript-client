@@ -1,0 +1,20 @@
+<li v-if="menu.url != null">
+	<a v-bind:href="menu.url">{{menu.label}}</a>
+</li>
+<li v-else
+ class="dropdown">
+	<a class="dropdown-toggle"
+	 data-toggle="dropdown"
+	 href="#"
+	 id="themes">{{menu.id}}
+		<span class="caret"></span>
+	</a>
+	<ul v-if="(menu.items || []).length > 0"
+	 class="dropdown-menu"
+	 aria-labelledby="themes">
+		<component :is="nav"
+		 v-for="submenu in menu.items"
+		 :key="submenu.id"
+		 v-bind:menu="submenu" />
+	</ul>
+</li>

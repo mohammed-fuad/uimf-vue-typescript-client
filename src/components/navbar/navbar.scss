@@ -1,0 +1,15 @@
+.dropdown:hover>.dropdown-menu {
+    display: block;
+}
+
+label[for=navbar-toggle-cbox] {
+    cursor: pointer;
+}
+
+#navbar-toggle-cbox:checked~.collapse {
+    display: block;
+}
+
+#navbar-toggle-cbox {
+    display: none;
+}
