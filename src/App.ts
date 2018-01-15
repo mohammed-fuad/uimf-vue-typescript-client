@@ -5,7 +5,7 @@ import { AppRouter } from './Core/Router/AppRouter';
 
 import './sass/main.scss';
 
-let coreServerUrl = 'http://localhost:62790';
+let coreServerUrl = 'http://localhost:57910';
 
 let server = new UmfServer(`${coreServerUrl}/api/form/metadata`, `${coreServerUrl}/api/form/run`);
 let app = new UmfApp(server, controlRegister);
