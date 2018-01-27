@@ -41,7 +41,7 @@ export class Paginator extends Vue {
 	}
 
 	get pages() {
-		let paginatorInput = this.form.inputs.find(t => t.metadata.id === this.field.metadata.customProperties.Customizations.Paginator);
+		let paginatorInput = this.form.inputs.find(t => t.metadata.id === this.field.metadata.customProperties.customizations.paginator);
 
 		let pageCount = Math.ceil(this.field.data.totalCount / paginatorInput.value.pageSize);
 

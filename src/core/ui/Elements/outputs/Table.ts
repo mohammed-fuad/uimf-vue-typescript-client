@@ -48,7 +48,7 @@ export class TableOutput extends Vue {
 	};
 
 	get columnsOrdered() {
-		let columns = this.field.metadata.customProperties.Columns.slice();
+		let columns = this.field.metadata.customProperties.columns.slice();
 		columns.sort((a, b) => { return a.orderIndex - b.orderIndex; });
 		return columns;
 	}

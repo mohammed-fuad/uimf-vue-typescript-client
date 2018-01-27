@@ -51,7 +51,7 @@ export class NavbarComponent extends Vue {
 
             for (let form of app.forms) {
                 if (form.customProperties != null) {
-                    let formMenu = app.getMenu(form.customProperties.Menu);
+                    let formMenu = app.getMenu(form.customProperties.menu);
 
                     if (formMenu != null) {
                         let currentFolder = {
@@ -84,7 +84,7 @@ export class NavbarComponent extends Vue {
                             label: form.label,
                             url: app.makeUrl(form.id),
                             // Make sure we respect both parent menu sorting order and then leaf-level menu sorting order.
-                            orderIndex: (formMenu.orderIndex * 100000) + form.customProperties.MenuOrderIndex
+                            orderIndex: (formMenu.orderIndex * 100000) + form.customProperties.menuOrderIndex
                         });
                     }
 

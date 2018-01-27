@@ -86,8 +86,8 @@ export class FormComponent extends Vue {
             this.initialized = true;
 
             this.visibleInputFields = this.form.inputs.filter(t => t.metadata.hidden === false);
-            this.submitButtonLabel = this.form.metadata.customProperties != null && this.form.metadata.customProperties.SubmitButtonLabel
-                ? this.form.metadata.customProperties.SubmitButtonLabel
+            this.submitButtonLabel = this.form.metadata.customProperties != null && this.form.metadata.customProperties.submitButtonLabel
+                ? this.form.metadata.customProperties.submitButtonLabel
                 : 'Submit';
 
             this.tabindex += 1;

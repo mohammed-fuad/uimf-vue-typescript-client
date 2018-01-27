@@ -7,13 +7,17 @@ import './sass/main.scss';
 
 let coreServerUrl = 'http://localhost:57910';
 
+if (process.env.NODE_ENV === 'production') {
+    coreServerUrl = '';
+}
+
 let server = new UmfServer(`${coreServerUrl}/api/form/metadata`, `${coreServerUrl}/api/form/run`);
 let app = new UmfApp(server, controlRegister);
 
 app.load().then(response => {
     let router = new AppRouter(app);
     app.useRouter(router);
-    
+
     app.registerResponseHandler(new handlers.FormComponentResponseHandler());
     app.registerResponseHandler(new handlers.MessageResponseHandler());
     app.registerResponseHandler(new handlers.ReloadResponseHandler((form, inputFieldValues) => {
