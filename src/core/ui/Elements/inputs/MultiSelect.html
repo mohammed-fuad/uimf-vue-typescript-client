@@ -1,27 +1,29 @@
-<multiselect id="id"
+<multiselect v-if="field.maxItemCount === 1"
+ id="id"
  v-model="field.value"
  required="field.metadata.required"
- label="label"
- track-by="label"
- placeholder="Type to search"
- open-direction="bottom"
+ placeholder="Select item"
  :options="options"
- :multiple="field.maxItemCount > 1"
  :searchable="true"
  :loading="isLoading"
- :internal-search="false"
+ :close-on-select="true"
  :clear-on-select="false"
- :close-on-select="false"
- :options-limit="300"
- :max-height="600"
- :show-no-results="false"
- :hide-selected="false"
+ label="label"
+ track-by="label"
  @search-change="asyncFind">
-	<template slot="clear"
-	 slot-scope="props">
-		<div class="multiselect__clear"
-		 v-if="field.value"
-		 @mousedown.prevent.stop="clearAll(props.search)"></div>
-	</template>
-	<span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+</multiselect>
+<multiselect v-else
+ id="id"
+ v-model="field.value.items"
+ required="field.metadata.required"
+ placeholder="Type to search"
+ :options="options"
+ :multiple="true"
+ :searchable="true"
+ :loading="isLoading"
+ :close-on-select="true"
+ label="label"
+ track-by="value"
+ @input="updateSelected"
+ @search-change="asyncFind">
 </multiselect>

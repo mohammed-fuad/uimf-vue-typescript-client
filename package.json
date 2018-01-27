@@ -19,6 +19,10 @@
     "coverage": "npm run coverage:run && npm run coverage:remap && npm run coverage:open",
     "dev": "webpack-dev-server --hot --inline"
   },
+  "files": [
+    "src/core",
+    "src/index.ts"
+  ],
   "dependencies": {
     "axios": "~0.16.2",
     "css-loader": "^0.28.7",

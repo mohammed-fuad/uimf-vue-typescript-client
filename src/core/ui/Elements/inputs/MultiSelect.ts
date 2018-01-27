@@ -5,33 +5,6 @@ import * as axiosLib from 'axios';
 let axios = axiosLib.default;
 
 import './Multiselect.scss';
-import { currentId } from 'async_hooks';
-
-function setInputValue(field, result) {
-	if (field.maxItemCount === 1) {
-		let v = (field.value || {}).value || null;
-		if (v != null) {
-			return [result.map(t => t)[0]];
-		}
-	}
-	else {
-		let v = ((field.value || {}).items || []).map(t => t.toString());
-		return v;
-	}
-}
-
-function getIdsQuery(field) {
-	let currentValue = field.maxItemCount === 1
-		? [(field.value || {}).value || '']
-		: (field.value || {}).items || [];
-
-	// Put values into an array.
-	if (currentValue[0] === '') {
-		currentValue = [];
-	}
-
-	return currentValue;
-}
 
 function buildFilter(parentForm, parameters, query) {
 	let promise;
@@ -67,15 +40,7 @@ export class MultiSelectInput extends Vue {
 	source: any[];
 	options: any[] = [];
 	isLoading: boolean = false;
-
-	mapToTypeaheadItems = function (items) {
-		return items.map(t => {
-			return {
-				label: t.label,
-				value: t.value.toString()
-			};
-		});
-	};
+	private selected: any[] = [];
 
 	created() {
 		this.id = this.$attrs['id'];
@@ -83,51 +48,51 @@ export class MultiSelectInput extends Vue {
 		this.app = this.$attrs['app'];
 		this.field = this.$attrs['field'];
 		this.tabindex = parseInt(this.$attrs['tabindex']);
-		this.source = this.field.metadata.customProperties.Source;
+		this.source = this.field.metadata.customProperties.source;
 
 		if (typeof (this.source) === 'string') {
 			let addedItems = {};
 			let query = '';
 			let timer = null;
 
-			let parameters = this.field.metadata.customProperties.Parameters;
+			let parameters = this.field.metadata.customProperties.parameters;
 			let parentForm = this.form;
 
-			setTimeout(() => {
-				buildFilter(parentForm, parameters, query).then(filter => {
-					this.app.server.postForm(this.source, filter).then(data => {
-						let toAdd = data.items.filter(t => {
-							let key = JSON.stringify(t.value);
-							if (addedItems[key] == null) {
-								addedItems[key] = true;
-
-								// Add item.
-								return true;
-							}
-
-							// Don't add item.
-							return false;
-						});
-					});
-				});
-			}, 300);
-
-			let currentValue = getIdsQuery(this.field);
-
-			if (currentValue.length > 0) {
-				let query = { ids: { items: currentValue } };
-
-				this.app.server.postForm(this.source, query).then(data => {
-
-					for (let t of data.items) {
+			buildFilter(parentForm, parameters, query).then(filter => {
+				this.app.server.postForm(this.source, filter).then(data => {
+					let toAdd = data.items.filter(t => {
 						let key = JSON.stringify(t.value);
-						addedItems[key] = true;
-					}
+						if (addedItems[key] == null) {
+							addedItems[key] = true;
 
-					let result = this.mapToTypeaheadItems(data.items);
-					this.options = setInputValue(this.field, result);
+							// Add item.
+							return true;
+						}
+
+						// Don't add item.
+						return false;
+					});
+
+					this.options = toAdd;
+
+					let currentValue = this.getIdsQuery(this.field);
+
+					if (currentValue.length > 0) {
+						this.setInputValue(this.field, this.options);
+					}
 				});
-			}
+			});
+		}
+		else {
+			this.options = this.mapToTypeaheadItems(this.source);
+			this.setInputValue(this.field, this.options);
+		}
+	}
+
+	updateSelected(value) {
+		if (this.field.maxItemCount !== 1) {
+			this.selected = value.map(t => typeof (t) === 'string' ? t : t.value.toString());
+			this.field.value.items = this.selected;
 		}
 	}
 
@@ -146,7 +111,7 @@ export class MultiSelectInput extends Vue {
 
 			// Search when user types something, but introduce a short delay
 			// to avoid excessive http requests.
-			let parameters = this.field.metadata.customProperties.Parameters;
+			let parameters = this.field.metadata.customProperties.parameters;
 			let parentForm = this.form;
 
 			timer = setTimeout(function () {
@@ -172,6 +137,44 @@ export class MultiSelectInput extends Vue {
 				});
 			}, 300);
 		}
+	}
+
+	getIdsQuery(field) {
+		let currentValue = field.maxItemCount === 1
+			? [(field.value || {}).value || '']
+			: (field.value || {}).items || [];
+
+		// Put values into an array.
+		if (currentValue[0] === '') {
+			currentValue = [];
+		}
+
+		return currentValue;
+	}
+
+	setInputValue(field, value) {
+		if (field.maxItemCount === 1) {
+			let v = value.filter(a => a.value === field.value.value) || null;
+			field.value = v[0];
+		}
+		else {
+			setTimeout(() => {
+				let v = (field.value || {}).items || [];
+				let result = value.filter(item => v.indexOf(item.value) !== -1);
+				field.value = {
+					items: result.map(t => t)
+				};
+			}, 300);
+		}
+	}
+
+	mapToTypeaheadItems(items) {
+		return items.map(t => {
+			return {
+				label: t.label,
+				value: t.value.toString()
+			};
+		});
 	}
 
 	clearAll() {
