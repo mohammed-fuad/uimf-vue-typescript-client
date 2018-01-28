@@ -11,7 +11,7 @@ import { ActionListEventArguments } from 'core-ui/elements/outputs/ActionListEve
  */
 export class ReloadFormAfterAction extends FormEventHandler {
 	run(form: FormInstance, eventHandlerMetadata: EventHandlerMetadata, args: ActionListEventArguments): Promise<void> {
-		let isTopLevelForm = args.form.get('parent') == null;
+		let isTopLevelForm = args.form.parent == null;
 		
 		if (isTopLevelForm && eventHandlerMetadata.customProperties.formId === args.actionFormId) {
 			args.form.submit(args.app, form, null, false);

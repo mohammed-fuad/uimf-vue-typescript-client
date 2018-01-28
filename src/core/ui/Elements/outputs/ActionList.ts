@@ -50,7 +50,7 @@ export class ActionList extends Vue {
 		let allRequiredInputsHaveData = await formInstance.allRequiredInputsHaveData(false);
 
 		if (action.action === 'run' && allRequiredInputsHaveData) {
-			await formInstance.submit(this.get('app'), false);
+			await formInstance.submit(this.app, false);
 			this.onActionRun(formInstance.metadata.id);
 		}
 		else {
