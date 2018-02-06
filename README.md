@@ -3,7 +3,7 @@
 This project is initial template client implemented by Vue using typescript language for [UI Metadata Framework](https://github.com/UNOPS/UiMetadataFramework).
 
 ### How to run the project
-#### 1. Run [UiMetadataFramework.Web](https://github.com/mohammed-fuad/UiMetadataFramework.Web) project
+#### 1. Run [UiMetadataFrameworkSample.Web](https://github.com/mohammed-fuad/UiMetadataFrameworkSample) project
 
 #### 2. Install dependencies
 
